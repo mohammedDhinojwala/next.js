@@ -2105,7 +2105,7 @@ describe('app-dir static/dynamic handling', () => {
         cacheStatus: 'skip',
         start: expect.any(Number),
         end: expect.any(Number),
-        cacheReason: 'auto no cache',
+        cacheReason: 'cache-control: no-cache (hard refresh)',
       })
 
       const otherPageMetrics =
