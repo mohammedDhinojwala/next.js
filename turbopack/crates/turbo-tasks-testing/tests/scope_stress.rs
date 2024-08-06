@@ -1,8 +1,7 @@
 #![feature(arbitrary_self_types)]
 
 use anyhow::Result;
-use turbo_tasks::{Completion, TryJoinIterExt, TurboTasks, Vc};
-use turbo_tasks_memory::MemoryBackend;
+use turbo_tasks::{run_once, Completion, TryJoinIterExt, Vc};
 use turbo_tasks_testing::{register, Registration};
 
 static REGISTRATION: Registration = register!();
@@ -15,7 +14,7 @@ fn rectangle_stress() {
         .build()
         .unwrap();
     rt.block_on(async {
-        let tt = TurboTasks::new(MemoryBackend::default());
+        let tt = REGISTRATION.create_turbo_tasks();
         let size = std::env::var("TURBOPACK_TEST_RECTANGLE_STRESS_SIZE")
             .map(|size| size.parse().unwrap())
             .unwrap_or(50);
@@ -23,13 +22,13 @@ fn rectangle_stress() {
             .map(|a| (a, size - 1))
             .chain((0..size - 1).map(|b| (size - 1, b)))
             .map(|(a, b)| {
-                let tt = &tt;
+                let tt = tt.clone();
                 async move {
-                    let task = tt.spawn_once_task(async move {
+                    run_once(tt, async move {
                         rectangle(a, b).strongly_consistent().await?;
                         Ok(Vc::<()>::default())
-                    });
-                    tt.wait_task_completion(task, false).await
+                    })
+                    .await
                 }
             })
             .try_join()
