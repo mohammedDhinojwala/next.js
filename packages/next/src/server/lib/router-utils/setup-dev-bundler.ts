@@ -89,7 +89,6 @@ import { normalizeMetadataPageToRoute } from '../../../lib/metadata/get-metadata
 import { createEnvDefinitions } from '../experimental/create-env-definitions'
 import { JsConfigPathsPlugin } from '../../../build/webpack/plugins/jsconfig-paths-plugin'
 import { store as consoleStore } from '../../../build/output/store'
-import { NEXT_PATCH_SYMBOL } from '../patch-fetch'
 
 export type SetupOpts = {
   renderServer: LazyRenderServerInstance
@@ -123,7 +122,6 @@ export type ServerFields = {
     typeof import('./filesystem').buildCustomRoute
   >[]
   setAppIsrStatus?: (key: string, value: false | number | null) => void
-  resetFetch?: () => void
 }
 
 async function verifyTypeScript(opts: SetupOpts) {
@@ -183,15 +181,8 @@ async function startWatcher(opts: SetupOpts) {
     logging: nextConfig.logging !== false,
   })
 
-  const originalFetch = global.fetch
-  const resetFetch = () => {
-    global.fetch = originalFetch
-    // @ts-ignore
-    global[NEXT_PATCH_SYMBOL] = false
-  }
-
   const hotReloader: NextJsHotReloaderInterface = opts.turbo
-    ? await createHotReloaderTurbopack(opts, serverFields, distDir, resetFetch)
+    ? await createHotReloaderTurbopack(opts, serverFields, distDir)
     : new HotReloaderWebpack(opts.dir, {
         appDir,
         pagesDir,
@@ -202,7 +193,6 @@ async function startWatcher(opts: SetupOpts) {
         telemetry: opts.telemetry,
         rewrites: opts.fsChecker.rewrites,
         previewProps: opts.fsChecker.prerenderManifest.preview,
-        resetFetch: resetFetch,
       })
 
   await hotReloader.start()

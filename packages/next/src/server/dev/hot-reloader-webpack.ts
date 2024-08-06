@@ -249,7 +249,6 @@ export default class HotReloaderWebpack implements NextJsHotReloaderInterface {
   private pagesMapping: { [key: string]: string } = {}
   private appDir?: string
   private telemetry: Telemetry
-  private resetFetch: () => void
   private versionInfo: VersionInfo = {
     staleness: 'unknown',
     installed: '0.0.0',
@@ -275,7 +274,6 @@ export default class HotReloaderWebpack implements NextJsHotReloaderInterface {
       rewrites,
       appDir,
       telemetry,
-      resetFetch,
     }: {
       config: NextConfigComplete
       pagesDir?: string
@@ -286,7 +284,6 @@ export default class HotReloaderWebpack implements NextJsHotReloaderInterface {
       rewrites: CustomRoutes['rewrites']
       appDir?: string
       telemetry: Telemetry
-      resetFetch: () => void
     }
   ) {
     this.hasAmpEntrypoints = false
@@ -304,7 +301,6 @@ export default class HotReloaderWebpack implements NextJsHotReloaderInterface {
     this.edgeServerStats = null
     this.serverPrevDocumentHash = null
     this.telemetry = telemetry
-    this.resetFetch = resetFetch
 
     this.config = config
     this.previewProps = previewProps
@@ -1369,7 +1365,6 @@ export default class HotReloaderWebpack implements NextJsHotReloaderInterface {
         changedCSSImportPages.size ||
         reloadAfterInvalidation
       ) {
-        this.resetFetch()
         this.refreshServerComponents()
       }
 
