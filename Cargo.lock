@@ -8359,10 +8359,14 @@ dependencies = [
  "async-trait",
  "auto-hash-map",
  "dashmap",
+ "indexmap 1.9.3",
  "once_cell",
  "parking_lot",
+ "rand",
+ "regex",
  "rustc-hash",
  "serde",
+ "serde_json",
  "smallvec",
  "tokio",
  "tracing",
@@ -8371,6 +8375,7 @@ dependencies = [
  "turbo-tasks-build",
  "turbo-tasks-hash",
  "turbo-tasks-malloc",
+ "turbo-tasks-testing",
 ]
 
 [[package]]
